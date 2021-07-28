@@ -14,3 +14,4 @@ windows:
     - sh -c 'while :; do clear && ./dev.sh --help; sleep 5; done'
     - sh -c 'while :; do clear && ./dev.sh -- ansible --help; sleep 5; done'
     - sh -c 'while :; do clear && ./dev.sh -- ansible-playbook --help; sleep 5; done'
+./dev.sh -- ansible localhost -i localhost, -c local -m ping
