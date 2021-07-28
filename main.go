@@ -110,9 +110,9 @@ func exec_pty_io_logic() error {
 	go Snoop(pty)
 	sig := make(chan os.Signal, 2)
 	//	signal.Notify(sig, syscall.SIGWINCH, syscall.SIGCLD)
-	cmd := exec.Command(os.Getenv("SHELL"), "")
+	//cmd := exec.Command(os.Getenv("SHELL"), "")
 	pp.Println(sub_command)
-	//cmd := exec.Command(sub_command)
+	cmd := exec.Command(sub_command)
 	cmd.Stdin, cmd.Stdout, cmd.Stderr = pty.Slave, pty.Slave, pty.Slave
 	cmd.Args = nil
 	cmd.SysProcAttr = &syscall.SysProcAttr{
@@ -138,9 +138,9 @@ func Snoop(pty *term.PTY) {
 	pidcol, _ := term.NewColor256(strconv.Itoa(pid), strconv.Itoa(pid%256), "")
 	msg := fmt.Sprint("\n", term.Green(Welcome), " pid:", pidcol, " file:", term.Yellow(cmd_file+strconv.Itoa(pid)+"\n"))
 	fmt.Println(msg)
-	_, err := os.Create(cmd_file + strconv.Itoa(pid))
+	F, err := os.Create(cmd_file + strconv.Itoa(pid))
 	f(err)
-	//	go reader(pty.Master, F)
+	go reader(pty.Master, F)
 	//go writer(pty.Master)
 }
 
