@@ -1,7 +1,7 @@
 # Parameters
 GOCMD=go
 COPYCMD=cp
-GO_VERSION=1.16.4
+GO_VERSION=1.16.6
 REAP=reap -vx
 PASSH=passh
 GOBUILD=$(GOCMD) build
@@ -49,4 +49,4 @@ kill:
 	pidof $(BINARY_NAME) && { killall $(BINARY_NAME); } || { true; } 
 
 dev:
-	command nodemon -i bin -w Makefile -w . -w ../go-dns-proxy-service -V --delay .1 -e go,sum -x sh -- -c "$(DEV_CMD)"
+	./dev.sh 
