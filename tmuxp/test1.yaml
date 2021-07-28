@@ -1,0 +1,15 @@
+---
+session_name: Dev Wireguard UI Server
+start_directory: /var/lib/persistent
+global_options:
+  default-shell: /bin/zsh
+  default-command: /bin/zsh
+windows:
+- shell_command_before:
+    - cd /root
+  options:
+    main-pane-height: 25
+  panes:
+    - sh -c 'while :; do clear && sleep 60; sleep 5; done'
+    - sh -c 'while :; do clear && sleep 60; sleep 5; done'
+...
