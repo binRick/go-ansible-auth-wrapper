@@ -1,10 +1,12 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"log"
 	"os"
 	"os/exec"
+	"os/signal"
 	"strconv"
 	"strings"
 	"syscall"
@@ -105,14 +107,14 @@ func exec_pty_io_logic() error {
 	myTerm := backupTerm
 	myTerm.Raw()
 	myTerm.Set(os.Stdin)
-	//backupTerm.Set(pty.Slave)
+	backupTerm.Set(pty.Slave)
 	defer backupTerm.Set(os.Stdin)
 	go Snoop(pty)
 	sig := make(chan os.Signal, 2)
-	//	signal.Notify(sig, syscall.SIGWINCH, syscall.SIGCLD)
-	//cmd := exec.Command(os.Getenv("SHELL"), "")
-	pp.Println(sub_command)
-	cmd := exec.Command(sub_command)
+	signal.Notify(sig, syscall.SIGWINCH, syscall.SIGCLD)
+	cmd := exec.Command(os.Getenv("SHELL"), "")
+	//pp.Println(sub_command)
+	//cmd := exec.Command(sub_command)
 	cmd.Stdin, cmd.Stdout, cmd.Stderr = pty.Slave, pty.Slave, pty.Slave
 	cmd.Args = nil
 	cmd.SysProcAttr = &syscall.SysProcAttr{
@@ -140,8 +142,20 @@ func Snoop(pty *term.PTY) {
 	fmt.Println(msg)
 	F, err := os.Create(cmd_file + strconv.Itoa(pid))
 	f(err)
+	cmd_file_fd, err := os.OpenFile(cmd_file, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	f(err)
+
+	datawriter := bufio.NewWriter(cmd_file_fd)
+
+	for _, data := range []string{fmt.Sprintf(`bash -c "%s"`, sub_command), `exit`} {
+		_, _ = datawriter.WriteString(data + "\n")
+	}
+
 	go reader(pty.Master, F)
-	//go writer(pty.Master)
+	go writer(pty.Master)
+
+	datawriter.Flush()
+	//	cmd_file_fd.Close()
 }
 
 func reader(master *os.File, L *os.File) {
