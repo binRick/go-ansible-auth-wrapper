@@ -6,10 +6,11 @@ global_options:
   default-command: /bin/zsh
 windows:
 - shell_command_before:
-    - cd /root
+    - cd ./go-ansible-auth-wrapper/.
+  layout: main-vertical
   options:
     main-pane-height: 25
   panes:
-    - sh -c 'while :; do clear && sleep 60; sleep 5; done'
-    - sh -c 'while :; do clear && sleep 60; sleep 5; done'
-...
+    - sh -c 'while :; do clear && ./dev.sh --help; sleep 5; done'
+    - sh -c 'while :; do clear && ./dev.sh -- ansible --help; sleep 5; done'
+    - sh -c 'while :; do clear && ./dev.sh -- ansible-playbook --help; sleep 5; done'

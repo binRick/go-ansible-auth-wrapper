@@ -9,6 +9,8 @@ require (
 	github.com/creack/pty v1.1.14 // indirect
 	github.com/google/goterm v0.0.0-20200907032337-555d40f16ae2
 	github.com/k0kubun/pp v3.0.1+incompatible
+	github.com/kr/pty v1.1.8
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/runletapp/go-console v0.0.0-20210430133751-b0b52d1dd585
+	golang.org/x/term v0.0.0-20210615171337-6886f2dfbf5b
 )

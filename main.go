@@ -6,10 +6,8 @@ import (
 	"log"
 	"os"
 	"os/exec"
-	"os/signal"
 	"strconv"
 	"strings"
-	"syscall"
 	"time"
 
 	"github.com/google/goterm/term"
@@ -98,41 +96,6 @@ func init() {
 		fmt.Print(gen_error_msg())
 		//os.Exit(0)
 	}
-}
-
-func exec_pty_io_logic() error {
-	pty, _ := term.OpenPTY()
-	defer pty.Close()
-	backupTerm, _ := term.Attr(os.Stdin)
-	myTerm := backupTerm
-	myTerm.Raw()
-	myTerm.Set(os.Stdin)
-	backupTerm.Set(pty.Slave)
-	defer backupTerm.Set(os.Stdin)
-	go Snoop(pty)
-	sig := make(chan os.Signal, 2)
-	signal.Notify(sig, syscall.SIGWINCH, syscall.SIGCLD)
-	cmd := exec.Command(os.Getenv("SHELL"), "")
-	//pp.Println(sub_command)
-	//cmd := exec.Command(sub_command)
-	cmd.Stdin, cmd.Stdout, cmd.Stderr = pty.Slave, pty.Slave, pty.Slave
-	cmd.Args = nil
-	cmd.SysProcAttr = &syscall.SysProcAttr{
-		Setsid:  true,
-		Setctty: true}
-	cmd.Start()
-	myTerm.Winsz(os.Stdin)
-	myTerm.Winsz(pty.Slave)
-	for {
-		switch <-sig {
-		case syscall.SIGWINCH:
-			myTerm.Winsz(os.Stdin)
-			myTerm.Setwinsz(pty.Slave)
-		default:
-			return nil
-		}
-	}
-	return nil
 }
 
 func Snoop(pty *term.PTY) {
